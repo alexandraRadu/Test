@@ -1,0 +1,17 @@
+com\spring\service\UserService.class
+com\spring\service\UserServiceImpl.class
+com\spring\exception\EventNotFound.class
+com\spring\repository\UserRepository.class
+com\spring\init\WebAppConfig.class
+com\spring\repository\EventRepository.class
+com\spring\model\Event.class
+com\spring\init\Initializer.class
+com\spring\controller\UserController.class
+com\spring\controller\NavigationController.class
+com\spring\exception\UserNotFound.class
+com\spring\controller\EventController.class
+com\spring\model\User.class
+com\spring\service\EventService.class
+com\spring\model\UserType.class
+com\spring\service\EventServiceImpl.class
+com\spring\model\EventType.class
