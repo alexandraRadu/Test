@@ -18,15 +18,18 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"com.spring.controller", "com.spring.service", "com.spring.repository", "com.spring.login"})
+@ComponentScan(basePackages = { "com.spring.controller", "com.spring.service", "com.spring.repository",
+		"com.spring.security" })
 @PropertySource("classpath:application.properties")
 @EnableJpaRepositories("com.spring.repository")
-public class WebAppConfig {
+public class WebAppConfig extends WebMvcConfigurerAdapter{
 
 	private static final String PROPERTY_NAME_DATABASE_DRIVER = "spring.datasource.driver-class-name";
 	private static final String PROPERTY_NAME_DATABASE_PASSWORD = "spring.datasource.password";
@@ -34,7 +37,8 @@ public class WebAppConfig {
 	private static final String PROPERTY_NAME_DATABASE_USERNAME = "spring.datasource.username";
 
 	private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "spring.jpa.database-platform";
-	//private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+	// private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL =
+	// "hibernate.show_sql";
 	private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
 
 	@Resource
@@ -57,20 +61,22 @@ public class WebAppConfig {
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactoryBean.setDataSource(dataSource());
 		entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
-		entityManagerFactoryBean.setPackagesToScan(env.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
-		
+		entityManagerFactoryBean
+				.setPackagesToScan(env.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+
 		entityManagerFactoryBean.setJpaProperties(hibProperties());
-		
+
 		return entityManagerFactoryBean;
 	}
 
 	private Properties hibProperties() {
 		Properties properties = new Properties();
-		properties.put(PROPERTY_NAME_HIBERNATE_DIALECT,	env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
-		//properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
+		properties.put(PROPERTY_NAME_HIBERNATE_DIALECT, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
+		// properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL,
+		// env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
 		return properties;
 	}
-	
+
 	@Bean
 	public JpaTransactionManager transactionManager() {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -78,19 +84,26 @@ public class WebAppConfig {
 		return transactionManager;
 	}
 
-	 @Bean
-	    public ViewResolver getViewResolver(){
-	        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-	        resolver.setPrefix("/WEB-INF/pages/");
-	        resolver.setSuffix(".jsp");
-	        return resolver;
-	    }
+	@Bean
+	public ViewResolver getViewResolver() {
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setPrefix("/WEB-INF/pages/");
+		resolver.setSuffix(".jsp");
+		return resolver;
+	}
+
+	/*
+	 * @Bean public ResourceBundleMessageSource messageSource() {
+	 * ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+	 * source.setBasename(env.getRequiredProperty("message.source.basename"));
+	 * source.setUseCodeAsDefaultMessage(true); return source; }
+	 */
+
+	/*
+	 * Configure ResourceHandlers to serve static resources like CSS/ Javascript
+	 */
 	
-	/*@Bean
-	public ResourceBundleMessageSource messageSource() {
-		ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-		source.setBasename(env.getRequiredProperty("message.source.basename"));
-		source.setUseCodeAsDefaultMessage(true);
-		return source;
-	}*/
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+	}
 }
